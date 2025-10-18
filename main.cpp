@@ -1,6 +1,8 @@
-#include "ArrayQueue.hpp"
+#include "ArrayQueue.h"
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+using namespace std;
 
 int main() {
     // create a queue of 10 integers

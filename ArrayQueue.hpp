@@ -1,69 +1,100 @@
-#ifndef ARRAY_QUEUE_HPP
-#define ARRAY_QUEUE_HPP
+#ifndef ARRAYQUEUE_HPP
+#define ARRAYQUEUE_HPP
 
-#include "Queue.hpp"
-#include <iostream>
-using namespace std;
+#include "ArrayQueue.h"
+#include <stdexcept>
 
 template <typename T>
-class ArrayQueue : public Queue<T> {
-    private:
-        // an array that contains the elements
-        T* buffer;
+ArrayQueue<T>::ArrayQueue(int size)
+    : maxSize(size), frontIndex(0), backIndex(-1), length(0) {
+    data = new T[maxSize];
+}
 
-        // the maximum number of elements in the queue
-        int maxSize;
+template <typename T>
+ArrayQueue<T>::ArrayQueue(const ArrayQueue<T>& other)
+    : maxSize(other.maxSize),
+      frontIndex(other.frontIndex),
+      backIndex(other.backIndex),
+      length(other.length) {
+    data = new T[maxSize];
+    for (int i = 0; i < maxSize; i++) {
+        data[i] = other.data[i];
+    }
+}
 
-        // the current position of the front element in the queue
-        int frontIndex;
+template <typename T>
+ArrayQueue<T>::~ArrayQueue() {
+    delete[] data;
+}
 
-        // the current position of the back element in the queue
-        int backIndex;
+template <typename T>
+void ArrayQueue<T>::enqueue(const T& item) {
+    if (isFull()) throw string("queue is full");
+    backIndex = (backIndex + 1) % maxSize;
+    data[backIndex] = item;
+    length++;
+}
 
-        // copy the values from the argument queue to `this`
-        void copy(const ArrayQueue<T>&);
+template <typename T>
+void ArrayQueue<T>::dequeue() {
+    if (isEmpty()) throw string("queue is empty");
+    frontIndex = (frontIndex + 1) % maxSize;
+    length--;
+}
 
-    public:
-        // constructor with the maximum size as the argument
-        ArrayQueue(int = 100);
+template <typename T>
+T& ArrayQueue<T>::front() {
+    if (isEmpty()) throw string("queue is empty");
+    return data[frontIndex];
+}
 
-        // copy constructor
-        ArrayQueue(const ArrayQueue<T>&);
+template <typename T>
+T& ArrayQueue<T>::back() {
+    if (isEmpty()) throw string("queue is empty");
+    return data[backIndex];
+}
 
-        // overloaded assignment operator
-        ArrayQueue<T>& operator=(const ArrayQueue<T>&);
+template <typename T>
+void ArrayQueue<T>::clear() {
+    frontIndex = 0;
+    backIndex = -1;
+    length = 0;
+}
 
-        // destructor
-        virtual ~ArrayQueue();
+template <typename T>
+int ArrayQueue<T>::getLength() const {
+    return length;
+}
 
-        // return the element at the back of the queue
-        virtual T back() const override;
+template <typename T>
+int ArrayQueue<T>::getMaxSize() const {
+    return maxSize;
+}
 
-        // remove all elements in the queue, resetting to the initial state
-        virtual void clear() override;
+template <typename T>
+bool ArrayQueue<T>::isEmpty() const {
+    return length == 0;
+}
 
-        // remove the front element from the queue
-        virtual void dequeue() override;
+template <typename T>
+bool ArrayQueue<T>::isFull() const {
+    return length == maxSize;
+}
 
-        // add the argument to the back of the queue
-        virtual void enqueue(const T&) override;
+template <typename T>
+ArrayQueue<T>& ArrayQueue<T>::operator=(const ArrayQueue<T>& other) {
+    if (this != &other) {
+        delete[] data;
+        maxSize = other.maxSize;
+        frontIndex = other.frontIndex;
+        backIndex = other.backIndex;
+        length = other.length;
+        data = new T[maxSize];
+        for (int i = 0; i < maxSize; i++) {
+            data[i] = other.data[i];
+        }
+    }
+    return *this;
+}
 
-        // return the element at the front of the queue
-        virtual T front() const override;
-
-        // return the current length of the queue
-        virtual int getLength() const override;
-
-        // return the maximum size of the queue
-        int getMaxSize() const;
-
-        // determine if the queue is currently empty
-        virtual bool isEmpty() const override;
-
-        // determine if the queue is currently full
-        bool isFull() const;
-};
-
-#include "ArrayQueue.tpp"
 #endif
-
