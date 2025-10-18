@@ -17,13 +17,24 @@ T ArrayQueue<T>::back() const {
     }
     return buffer[backIndex];
 }
-
+/*
 template <typename T>
 void ArrayQueue<T>::clear() {
     delete[] buffer;
     buffer = nullptr;
     this->length = 0;
     maxSize = 0;
+    frontIndex = 0;
+    backIndex = -1;
+}
+*/
+template <typename T>
+void ArrayQueue<T>::clear() {
+    if (buffer != nullptr) {
+        delete[] buffer;
+    }
+    buffer = new T[maxSize];
+    this->length = 0;
     frontIndex = 0;
     backIndex = -1;
 }

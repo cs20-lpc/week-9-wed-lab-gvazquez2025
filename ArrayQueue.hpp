@@ -66,3 +66,4 @@ class ArrayQueue : public Queue<T> {
 
 #include "ArrayQueue.tpp"
 #endif
+
